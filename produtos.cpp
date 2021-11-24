@@ -12,14 +12,13 @@ struct produto{
 
 //variaveis globais
 struct produto p;
-int questao;
+int questao, i, id;
 
 void cadastro(){
 	printf("\nCadastro de produtos");
 	printf("\nDigite nome do produto: ");
 	fflush(stdin);
 	gets(p.nome);
-	fflush(stdin);
 	printf("\nDigite o valor: ");
 	scanf("%f",&p.valor);
 	printf("\nQuantidade: ");
@@ -31,27 +30,34 @@ void getall(){
 	char str[255];
 	FILE *arq;
 	arq = fopen("produtos.txt", "r");
-	while ( !feof(arq) ) { /* imprime todo o arquivo no monitor */
-		fgets(str, 255, arq);
-		printf("%s", str);
-	}
+	if (arq != NULL){
+		while (!feof(arq)) { /* imprime todo o arquivo no monitor */
+			fgets(str, 255, arq);
+			printf("%s", str);
+		}
+	}else{
+		printf("Arquivo não encontrado.\n");
+	    system("pause");
+	}	
 	fclose(arq);
 }
 
-/*int getbyid(){
+int getbyid(int id){
 	system("cls");
-	char str[3];
-	int id;
 	printf("\nDigite o id do projeto: ");
-	scanf("%d",&p.id);
+	scanf("%d",&id);
 	FILE *arq;
 	arq = fopen("produtos.txt", "r");
-	while ( !feof(arq) ) {
-		fgets(str, 3, arq);
-		printf("%s", str);
+	while (!feof(arq)){
+		if (p.id == id){
+			fscanf(arq,"Id: %d",&p.id);
+			fscanf(arq,"Nome: %s",&p.nome);
+			fscanf(arq,"Valor: %f",&p.valor);
+			fscanf(arq,"Quantidade: %d",&p.qtde);
+		}
 	}
 	fclose(arq);
-}*/
+}
 
 FILE* abre_arquivo(char caminho[50], char modo[2]){
 	FILE *arquivo;
@@ -69,7 +75,7 @@ void fecha_arquivo(FILE *arquivo){
 int main(){
 	setlocale(LC_ALL,"Portuguese");
 	do{
-		printf("Menu:\n-----------------------------------\n1- Cadastrar produto \n2- Todos os produtos \n3- Busca por Id \n4- Alterar qualtidade \n5- Sair\n-----------------------------------\n\nEscolha: ");
+		printf("Menu:\n-----------------------------------\n1- Cadastrar produto \n2- Todos os produtos \n3- Busca por Id \n4- Alterar quantidade \n5- Sair\n-----------------------------------\n\nEscolha: ");
 		scanf("%d",&questao);
 		if((questao==1)||(questao==2)||(questao==3)||(questao==4)){
 			
@@ -77,8 +83,11 @@ int main(){
 				case 1:		
 					FILE *arquivo;								
 					cadastro();
-					arquivo = fopen("produtos.txt","a");
-					fprintf(arquivo,"Nome: %s \nValor: %2.f \nQuantidade: %d\n-----------------------------------\n",p.nome, p.valor, p.qtde);
+					arquivo = fopen("produtos.txt","a");	
+					//fseek(arquivo, 255, SEEK_CUR);
+					p.id = i;
+					i++;
+					fprintf(arquivo,"Id: %d \nNome: %s \nValor: %2.f \nQuantidade: %d\n-----------------------------------\n",p.id, p.nome, p.valor, p.qtde);
 					fclose(arquivo);
 					system ("Pause");
 				break;
@@ -88,15 +97,11 @@ int main(){
 				break;
 				
 				case 3:
-					//getbyid();
+					getbyid(id);
 				break;
 				
 				case 4:
-					printf("Saindo...\n");
-				break;
-				
-				case 5:
-					printf("Saindo...\n");
+					printf(" ");
 				break;
 			}
 		}
